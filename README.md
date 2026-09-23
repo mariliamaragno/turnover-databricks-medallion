@@ -45,6 +45,17 @@ A lógica de tendência (janela dos últimos 6 meses) foi implementada duas veze
 
 Como demonstração de que a camada Gold serve como base tanto para análise quanto para ciência de dados, um notebook separado treina um classificador Random Forest (PySpark MLlib) sobre \`mart_features_turnover\`, prevendo a probabilidade de desligamento. O treinamento evidenciou um problema clássico de **classes desbalanceadas** (~17% de turnover) — corrigido com ponderação de classe (\`weightCol\`) no treinamento.
 
+## Orquestração (Databricks Workflows)
+
+O pipeline é orquestrado via **Databricks Workflows**, com duas tasks encadeadas:
+
+1. **`gerar_dados_sinteticos`** — executa o notebook de geração de dados (Faker + PySpark), populando as tabelas Bronze
+2. **`rodar_dbt`** — clona o projeto dbt do GitHub, instala dependências (`dbt deps`) e executa a transformação completa (`dbt run` + `dbt test`) sobre as tabelas recém-geradas
+
+A segunda task depende explicitamente da primeira (`depends on`), garantindo que a transformação só rode depois que os dados brutos estiverem disponíveis — mesmo princípio de dependência entre tasks usado nas DAGs do Airflow nos outros dois projetos deste portfólio, aqui implementado na ferramenta de orquestração nativa do Databricks. O job está configurado com agendamento diário, simulando a atualização recorrente de um pipeline de produção.
+
+**Por que clonar do GitHub dentro do notebook, em vez de rodar direto do ambiente local:** essa abordagem torna o pipeline **auto-contido e reprodutível** — qualquer execução do Workflow sempre usa a versão mais recente do código publicada no repositório, sem depender de arquivos locais sincronizados manualmente.
+
 ## Como rodar localmente (camada dbt)
 
 \`\`\`bash
@@ -67,7 +78,7 @@ dbt test
 - [x] Camada Gold (window functions SQL, mart de features)
 - [x] Testes de qualidade de dados
 - [x] Modelo de Machine Learning (Random Forest, PySpark MLlib) como consumidor da camada Gold
-- [ ] Orquestração via Databricks Workflows
+- [x] Orquestração via Databricks Workflows (job diário com tasks encadeadas)
 
 ---
 
