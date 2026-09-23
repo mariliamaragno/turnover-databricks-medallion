@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: mart_features_turnover
+    columns:
+      - name: id_funcionario
+        tests:
+          - not_null
+          - unique
+
+      - name: area
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Engenharia", "Comercial", "Produto", "RH", "Financeiro"]
+
+      - name: senioridade
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Júnior", "Pleno", "Sênior"]
+
+      - name: saiu
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: media_desempenho_6m
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 10

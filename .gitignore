@@ -1,0 +1,8 @@
+venv/
+turnover_dbt/target/
+turnover_dbt/dbt_packages/
+turnover_dbt/logs/
+turnover_dbt/profiles.yml
+__pycache__/
+*.pyc
+logs/

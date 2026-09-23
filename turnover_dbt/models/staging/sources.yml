@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: default
+    tables:
+      - name: raw_funcionarios
+      - name: raw_eventos
+      - name: raw_desligamentos
